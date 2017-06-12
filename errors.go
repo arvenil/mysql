@@ -93,6 +93,7 @@ func (mc *mysqlConn) getWarnings() (err error) {
 	if err != nil {
 		return
 	}
+	defer rows.Close()
 
 	var warnings = MySQLWarnings{}
 	var values = make([]driver.Value, 3)
@@ -125,7 +126,6 @@ func (mc *mysqlConn) getWarnings() (err error) {
 			return warnings
 
 		default:
-			rows.Close()
 			return
 		}
 	}
