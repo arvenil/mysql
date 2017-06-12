@@ -182,6 +182,23 @@ func maybeSkip(t *testing.T, err error, skipErrno uint16) {
 	}
 }
 
+func TestWarningsDontLeakConnections(t *testing.T) {
+	runTests(t, dsn, func(dbt *DBTest) {
+		dbt.db.SetMaxIdleConns(0)
+		rows := dbt.mustQuery("SIGNAL SQLSTATE '01000' SET MESSAGE_TEXT = 'Example warning!'")
+		if rows.Next() {
+			dbt.Error("unexpected data in empty result")
+			return
+		}
+		rows.Close()
+
+		openConnections := dbt.db.Stats().OpenConnections
+		if openConnections > 0 {
+			dbt.Errorf("open connections: %d", openConnections)
+		}
+	})
+}
+
 func TestEmptyQuery(t *testing.T) {
 	runTests(t, dsn, func(dbt *DBTest) {
 		// just a comment, no query
