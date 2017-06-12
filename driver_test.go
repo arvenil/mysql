@@ -183,7 +183,9 @@ func maybeSkip(t *testing.T, err error, skipErrno uint16) {
 }
 
 func TestWarningsDontLeakConnections(t *testing.T) {
-	runTests(t, dsn, func(dbt *DBTest) {
+	relaxedDsn := dsn + "&sql_mode='ALLOW_INVALID_DATES,NO_AUTO_CREATE_USER'"
+
+	runTests(t, relaxedDsn, func(dbt *DBTest) {
 		dbt.db.SetMaxIdleConns(0)
 		rows := dbt.mustQuery("SIGNAL SQLSTATE '01000' SET MESSAGE_TEXT = 'Example warning!'")
 		if rows.Next() {
