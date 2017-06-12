@@ -183,7 +183,7 @@ func maybeSkip(t *testing.T, err error, skipErrno uint16) {
 }
 
 func TestWarningsDontLeakConnections(t *testing.T) {
-	relaxedDsn := dsn + "&sql_mode='ALLOW_INVALID_DATES,NO_AUTO_CREATE_USER'"
+	relaxedDsn := dsn + "&sql_mode='ALLOW_INVALID_DATES,NO_AUTO_CREATE_USER'&strict=false"
 
 	runTests(t, relaxedDsn, func(dbt *DBTest) {
 		dbt.db.SetMaxIdleConns(0)
